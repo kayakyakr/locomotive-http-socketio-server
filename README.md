@@ -13,8 +13,8 @@ Change your server.js file to use httpSocketioServer. The socket.io instance wil
 
 ```
 var locomotive = require('locomotive')
-  , bootable = require('bootable')
-  , locomotive.boot.httpSocketioServer = require('locomotive-http-socketio-server');
+  , bootable = require('bootable');
+locomotive.boot.httpSocketioServer = require('locomotive-http-socketio-server');
 
 // Create a new application and initialize it with *required* support for
 // controllers and views.  Move (or remove) these lines at your own peril.
