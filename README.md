@@ -57,6 +57,59 @@ module.exports = function(){
 }
 ```
 
+## Sessions
+
+Session support for socket.io requires a bit of middleware work. In 30_middleware.js (or your middleware file):
+
+```
+var body_parser = express.bodyParser(),
+    cookie_parser = express.cookieParser(),
+    session_middleware = express.session({ secret: '', maxAge: new Date(Date.now() + 3600000) }), // include secret, store, whatever else you're using
+    passport_initialize = passport.initialize(); // skip if not using passport
+    passport_session = passport.session();
+  
+this.socketSession = function(req, next){
+  cookie_parser(req, {}, function(){
+    session_middleware(req, {on: function(){}, end: function(){}}, function(){ // trick the session middleware to load without writing up the response param
+      passport_initialize(req, {}, function(){ // skip if not using passport
+        passport_session(req, {}, next);
+      });
+    });
+  });
+};
+
+this.use(cookie_parser);
+this.use(body_parser);
+  
+this.use(session_middleware);
+this.use(passport_initialize);
+this.use(passport_session);
+```
+
+Now, let your middleware do the job of loading up your user. In lib/socket.js:
+
+```
+module.exports = function(){
+  var $this = this;
+  this.sio.set('authorization', function (data, accept) {
+    if (!data.headers.cookie) { return accept('Session cookie required.', false); }
+    
+    data.originalUrl = data.url; // need this to trick session into thinking it's a full request
+    $this.socketSession(data, function(){
+      if(data.user){ return accept(null, true); }
+      else { return accept('User not logged in', false); }
+    });
+  });
+
+  // listen to the connect event
+  this.sio.sockets.on('connection', function(socket){
+    var hs = socket.handshake;
+    
+    socket.join(hs.user.id);
+  });
+}
+```
+
 ## License and other
 
 This code is provided under the MIT license. No support is provided, use at your own risk.
