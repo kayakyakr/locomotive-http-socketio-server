@@ -56,3 +56,7 @@ module.exports = function(){
   });
 }
 ```
+
+## License and other
+
+This code is provided under the MIT license. No support is provided, use at your own risk.
