@@ -50,13 +50,9 @@ Then, in lib/socket.js:
 
 ```
 module.exports = function(){
-  return function socketInit(done){
-    // listen to the connect event
-    this.sio.sockets.on('connection', function(socket){
-      
-    });
+  // listen to the connect event
+  this.sio.sockets.on('connection', function(socket){
     
-    return done();
-  }
+  });
 }
 ```
