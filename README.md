@@ -9,7 +9,7 @@ Integration of locomotive (express) and socket.io
     
 ## Usage
 
-Change your server.js file to use httpSocketioServer. The socket.io instance will be available off app.socket.
+Change your server.js file to use httpSocketioServer. The socket.io instance will be available off app.sio.
 
 ```
 var locomotive = require('locomotive')
@@ -31,6 +31,9 @@ app.phase(bootable.initializers(__dirname + '/config/initializers'));
 app.phase(locomotive.boot.routes(__dirname + '/config/routes'));
 app.phase(locomotive.boot.httpSocketioServer(3000, '0.0.0.0'));
 
+// Handle the socket.io events that are specific to your application
+app.phase(require('__dirname' + '/lib/socket'))
+
 // Boot the application.  The phases registered above will be executed
 // sequentially, resulting in a fully initialized server that is listening
 // for requests.
@@ -41,4 +44,15 @@ app.boot(function(err) {
     return process.exit(-1);
   }
 });
+```
+
+Then, in lib/socket.js:
+
+```
+module.exports = function(){
+  // listen to the connect event
+  this.sio.sockets.on('connection', function(socket){
+    
+  });
+}
 ```
