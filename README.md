@@ -32,7 +32,7 @@ app.phase(locomotive.boot.routes(__dirname + '/config/routes'));
 app.phase(locomotive.boot.httpSocketioServer(3000, '0.0.0.0'));
 
 // Handle the socket.io events that are specific to your application
-app.phase(require('__dirname' + '/lib/socket'))
+app.phase(require(__dirname + '/lib/socket'))
 
 // Boot the application.  The phases registered above will be executed
 // sequentially, resulting in a fully initialized server that is listening
@@ -50,9 +50,13 @@ Then, in lib/socket.js:
 
 ```
 module.exports = function(){
-  // listen to the connect event
-  this.sio.sockets.on('connection', function(socket){
+  return function socketInit(done){
+    // listen to the connect event
+    this.sio.sockets.on('connection', function(socket){
+      
+    });
     
-  });
+    return done();
+  }
 }
 ```
